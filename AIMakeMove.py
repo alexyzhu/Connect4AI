@@ -5,13 +5,13 @@ import time
 TIME_PER_MOVE = -1
 TIME_REMAINING = -1
 TMAX = 600
-gBoard = [[]]
+GBOARD = [[]]
 
 
 def MakeMove(board: [[]], PlayerIsRed: bool) -> int:
-    global TIME_PER_MOVE, TMAX, TIME_REMAINING, gBoard
+    global TIME_PER_MOVE, TMAX, TIME_REMAINING, GBOARD
 
-    gBoard = board
+    GBOARD = board
 
     if TIME_PER_MOVE == -1:
         boardSize = len(board) * len(board[0])
@@ -59,7 +59,7 @@ def boardEval(forRedPlayer: bool) -> int:
 
 
 def abSearch(alpha, beta, depth: int, isRedPlayer: bool, timeCutoff, isRedTurn: bool) -> int:
-    global gBoard
+    global GBOARD
     if time.time() >= timeCutoff:
         return 0
     elif depth == 0:
@@ -67,7 +67,7 @@ def abSearch(alpha, beta, depth: int, isRedPlayer: bool, timeCutoff, isRedTurn: 
 
     if isRedPlayer == isRedTurn:
         currMax = float("-inf")
-        for column in range(len(gBoard[0])):
+        for column in range(len(GBOARD[0])):
             if not canMakeMove(column):
                 continue
             simMove(column, isRedPlayer)
@@ -79,7 +79,7 @@ def abSearch(alpha, beta, depth: int, isRedPlayer: bool, timeCutoff, isRedTurn: 
         return currMax
     else:
         currMin = float("inf")
-        for column in range(len(gBoard[0])):
+        for column in range(len(GBOARD[0])):
             if not canMakeMove(column):
                 continue
             simMove(column, isRedPlayer)
@@ -92,40 +92,40 @@ def abSearch(alpha, beta, depth: int, isRedPlayer: bool, timeCutoff, isRedTurn: 
 
 
 def simMove(column: int, playerIsRed: bool) -> None:
-    global gBoard
+    global GBOARD
     tile = -1 if playerIsRed else 1
-    for r, row in enumerate(gBoard):
+    for r, row in enumerate(GBOARD):
         if row[column] == 0:
-            gBoard[r][column] = tile
+            GBOARD[r][column] = tile
 
 
 def undoMove(column: int) -> None:
-    global gBoard
-    for r, row in enumerate(gBoard[::-1]):    # iterate from top
+    global GBOARD
+    for r, row in enumerate(GBOARD[::-1]):    # iterate from top
         if row[column] != 0:
-            gBoard[len(gBoard)-1-r][column] = 0
+            GBOARD[len(GBOARD)-1-r][column] = 0
             return
 
 
 def canMakeMove(column: int) -> bool:
-    return gBoard[5][column] == 0
+    return GBOARD[5][column] == 0
 
 
 def scoreXInARowOccurrences(xInARowWeights: dict, isRed: bool) -> int:
-    global gBoard
+    global GBOARD
     occurrences = [0, 0, 0]
     target = 1 if isRed else -1
 
-    for row in gBoard:
+    for row in GBOARD:
         occurrences = addOcc(occurrences, consecutiveTiles(row, target))
 
-    for column in range(len(gBoard[0])):
-        column = [gBoard[x][column] for x in range(len(gBoard))]
+    for column in range(len(GBOARD[0])):
+        column = [GBOARD[x][column] for x in range(len(GBOARD))]
         occurrences = addOcc(occurrences, consecutiveTiles(column, target))
 
-    boardNumpy = np.array(gBoard)
-    for diag in range(len(gBoard)+len(gBoard[0])-1):
-        diag = (len(gBoard)+len(gBoard[0]))//2 - diag    # get diagonal offset that numpy uses
+    boardNumpy = np.array(GBOARD)
+    for diag in range(len(GBOARD)+len(GBOARD[0])-1):
+        diag = (len(GBOARD)+len(GBOARD[0]))//2 - diag    # get diagonal offset that numpy uses
         occurrences = addOcc(occurrences, consecutiveTiles(list(boardNumpy.diagonal(diag)), target))
         # search anti-diagonal
         occurrences = addOcc(occurrences, consecutiveTiles(list(np.fliplr(boardNumpy).diagonal(diag)), target))
