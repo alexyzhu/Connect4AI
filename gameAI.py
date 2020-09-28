@@ -92,7 +92,7 @@ def checkGameOver() -> bool:
 
 
 def runGame():
-    if input("Would you like to play as Red of Yellow (R/Y): ").lower() == "R".lower():
+    if input("Would you like to play as Red or Yellow (R/Y): ").lower() == "R".lower():
         isRed = True
     else:
         isRed = False
