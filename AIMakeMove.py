@@ -1,6 +1,7 @@
 import numpy as np
 import time
 
+
 # Global Variables
 TIME_PER_MOVE = -1
 TIME_REMAINING = -1
@@ -19,14 +20,14 @@ def MakeMove(board: [[]], PlayerIsRed: bool) -> int:
         TIME_PER_MOVE = (TMAX/totalMoves)*.95
         TIME_REMAINING = TMAX
 
-    if TIME_PER_MOVE <= TMAX * 0.05 or TIME_REMAINING <= 3:
-        return chooseFirstMove(board)
+    if TIME_REMAINING <= TMAX * 0.05 or TIME_REMAINING <= 3:
+        return chooseFirstMove()
     startTime = time.time()
     cutoffTime = startTime + TIME_PER_MOVE  # calculate when to stop
 
     depth = 0
     bestScore = float("-inf")
-    bestCol = chooseFirstMove(board)
+    bestCol = chooseFirstMove()
     result = bestCol
 
     while time.time() < cutoffTime:
@@ -46,9 +47,9 @@ def MakeMove(board: [[]], PlayerIsRed: bool) -> int:
     return result
 
 
-def chooseFirstMove(board: [[]]) -> int:
-    for col in range(len(board[0])):
-        if board[5][col] == 0:
+def chooseFirstMove() -> int:
+    for col in range(len(GBOARD[0])):
+        if GBOARD[5][col] == 0:
             return col
 
 
@@ -93,10 +94,11 @@ def abSearch(alpha, beta, depth: int, isRedPlayer: bool, timeCutoff, isRedTurn: 
 
 def simMove(column: int, playerIsRed: bool) -> None:
     global GBOARD
-    tile = -1 if playerIsRed else 1
+    tile = 1 if playerIsRed else -1
     for r, row in enumerate(GBOARD):
         if row[column] == 0:
             GBOARD[r][column] = tile
+            return
 
 
 def undoMove(column: int) -> None:
@@ -149,6 +151,6 @@ def consecutiveTiles(array: [], target: int) -> []:
             currCount += 1
         else:
             if currCount > 1:
-                result[min(currCount, 4) - 1] += 1
+                result[min(currCount, 4) - 2] += 1
             currCount = 0
     return result
