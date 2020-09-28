@@ -1,5 +1,5 @@
 import numpy as np
-import AImakeMove as AI
+import AIMakeMove as AI
 
 
 RED_PLAYER = 1
